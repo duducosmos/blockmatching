@@ -4,6 +4,8 @@
 Using data from block matching algorithm to separeting moving regions in
 image using graph theory.
 
+License
+-------
 Developed by: E. S. Pereira.
 e-mail: pereira.somoza@gmail.com
 
@@ -49,16 +51,19 @@ def clustering(x0, y0, x1, y1):
     Based on connected components in an undirected graph algorithm.
 
     Generate a mask with arrows representing the vector moviment.
-    input:
-        x0: 2d Array - Grid with x initial position of vector
-        y0: 2d Array - Grid with y initial position of vector
-        x1: 2d Array - Grid with x final position of vector
-        y1: 2d Array - Grid with y final position of vector
-    return:
-        dsx: 2d Array - Grid with x displacement.
-        dsy: 2d Array - Grid with y displacement.
-        object_tops: list of lists with x, y for each graph.
-        mean_displacement: list with mean displacement of each graph.
+    Parameters
+    ----------
+    :parameter 2d_array x0: 2d Array - Grid with x initial position of vector
+    :parameter 2d_array y0: 2d Array - Grid with y initial position of vector
+    :parameter 2d_array x1: 2d Array - Grid with x final position of vector
+    :parameter 2d_array y1: 2d Array - Grid with y final position of vector
+
+    Return
+    ------
+    :return 2d_array dsx: 2d Array - Grid with x displacement.
+    :return 2d_arraydsy: 2d Array - Grid with y displacement.
+    :return list object_tops: list of lists with x, y for each graph.
+    :return list mean_displacement: list with mean displacement of each graph.
     """
     sh = x0.shape
     ds = sqrt((x0 - x1) ** 2 + (y0 - y1) ** 2.0)

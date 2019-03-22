@@ -1,16 +1,16 @@
 #!/usr/bin/env python3.6
 # -*- Coding: UTF-8 -*-
-"""
+r"""
 Block Matching Algorithm.
-
-According to :cite:`cuevas2013block` in a block matching (BM) approach:
+------------------------
+According to [cuevs2013]_ in a block matching (BM) approach:
 
     '...image frames in a video sequence are divided into blocks. For each
     block in the current frame, the best matching block is identified inside a
     region of the previous frame, aiming to minimize the sum of absolute
     differences...'
 
-From the work of  :cite:`perez2010validation`:
+From the work of  [perez2010]_:
 
     '...pixel-specific motion vectors are determined by calculating the RMSE of
      the difference between two consecutive Kt*grids surrounding the considered
@@ -22,9 +22,9 @@ From the work of  :cite:`perez2010validation`:
      subsequently smoothed by averaging each pixel with its 8 surrounding
      neighbors...'
 
-For example, considering a image, in  t0 + k dt, with 9x9 pixels and a block
-grid with 3x3 pixels. The image bellow  it is assumed that the central pixel C
-is surrounding by pixels A.
+For example, considering a image, in  :math:`t_0 + k dt`, with 9x9 pixels and a
+block grid with 3x3 pixels. The image bellow  it is assumed that the central
+pixel C is surrounding by pixels A.
 
 ::
 
@@ -39,19 +39,19 @@ is surrounding by pixels A.
     * * * * * * * * *
 
 
-Now, for a image in time t0 + (k+1)dt, the value of block with the pixel C,
-in the image in t0 +kdt, is compared with values of piexls in the 9x9 window
-of the image in t0+(k+1)dt.
+Now, for a image in time :math:`t_0 + (k+1)dt`, the value of block with the pixel C,
+in the image in :math:`t_0 +kdt`, is compared with values of piexls in the 9x9 window
+of the image in :math:`t_0+(k+1)dt`.
 
-The most probable direction of the moviment of the pixel C, at t0 + (k+1)dt,
-is given by the position of the corresponding block with the lowest
-square mean error -SME (subtraction of the 3x3 subgrid)
-(e.g. :cite:`khawase2017overview`).
+The most probable direction of the moviment of the pixel C, at
+:math:`t_0 + (k+1)dt`, is given by the position of the corresponding block with
+the lowest square mean error -SME (subtraction of the 3x3 subgrid)
+(e.g. [khawase17]_).
 
 In the following example, the 3x3 block was in the initial position i=4, j=4.
 The new initial subblock with lowest  is in i=7, j=7.
 
-Initial position of 3x3 block in t0 + kdt:
+Initial position of 3x3 block in :math:`t_0 + kdt`:
 
 ::
 
@@ -65,7 +65,7 @@ Initial position of 3x3 block in t0 + kdt:
 * * * * * * * * *
 * * * * * * * * *
 
-The new position of 3x3 block in t0 + (i+1)dt:
+The new position of 3x3 block in :math:`t_0 + (i+1)dt`:
 
 ::
 
@@ -82,6 +82,8 @@ The new position of 3x3 block in t0 + (i+1)dt:
 The size of search window depend of the expected velocity of the block. For
 slow moviment, a window with size of 3  times can be considered.
 
+License
+-------
 Developed by: E. S. Pereira.
 e-mail: pereira.somoza@gmail.com
 
@@ -99,8 +101,20 @@ Copyright [2019] [E. S. Pereira]
    See the License for the specific language governing permissions and
    limitations under the License.
 
-.. bibliography:: refs.bib
-    :cited:
+References
+----------
+.. [cuevs2013] CUEVAS, Erik et al. Block matching algorithm for motion
+estimation based on Artificial Bee Colony (ABC).
+Applied Soft Computing, v. 13, n. 6, p. 3047-3059, 2013.
+
+.. [khawase17] KHAWASE, Sonam T. et al. An Overview of Block Matching
+Algorithms for Motion Vector Estimation. In: Proceedings of the Second
+International Conference on Research in Intelligent and Computing in
+Engineering, str. 2017. p. 217-222.
+
+.. [perez2010] Perez, R. et al. Validation of short and medium term
+operational solar radiation forecasts in the US.  Solar Energy,
+84. 12. 2161-2172. 2010.
 """
 
 from numba import jitclass
@@ -139,7 +153,7 @@ class ImageSizeError(Exception):
 
 @njit(TYPESSME, nogil=True)
 def _ssme(window, block, height, width):
-    '''
+    r'''
     Compare the block in the window.
     input:
         window - 2d array representing the window
@@ -268,17 +282,22 @@ def _block_matching(img0, img1, width, height, wblock, hblock,
 def block_matching(img0, img1, width, height):
     """
     Block matching algorithm.
+    -------------------------
     Motion estimation from two sequential images.
-    Parameters:
-        img0    : 2d array - Image in time t0 + kdt
-        img1    : 2d array - Image in time t0 + (k+1)dt
-        width  : int64 - matching block width
-        height : int64 - matching block height
+
+    Parameters
+    ----------
+        :parameter 2d_array img0: 2d array - Image in time t0 + kdt
+        :parameter 2d_array img1: 2d array - Image in time t0 + (k+1)dt
+        :parameter int64 width: int64 - matching block width
+        :parameter int64 height: int64 - matching block height
+
     Return:
-            XI - 2d int64 array - Grid with Initial x
-            YI - 2d int64 array - Grid with Initial y
-            XF - 2d int64 array - Final matching Grid with x
-            YF - 2d int64 array - Final matching Grid with y
+    ------
+        :return 2d_array XI: - 2d int64 array - Grid with Initial x
+        :return 2d_array YI: - 2d int64 array - Grid with Initial y
+        :return 2d_array XF: - 2d int64 array - Final matching Grid with x
+        :return 2d_array YF: - 2d int64 array - Final matching Grid with y
     """
 
     if img0.shape[0] != img1.shape[0]:

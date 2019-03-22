@@ -15,12 +15,24 @@ Block Matching
 .. automodule:: blockmatching.blockmatching
    :members:
 
-.. bibliography:: refs.bib
-   :style: plain
+Background and Foreground extractor
+===================
+.. automodule:: blockmatching.background
+  :members:
 
 Clustering
 ===================
 .. automodule:: blockmatching.clustering
+  :members:
+
+Motion Layers
+===================
+.. automodule:: blockmatching.motionlayers
+  :members:
+
+Vector Mask
+===================
+.. automodule:: blockmatching.vectormask
   :members:
 
 Indices and tables

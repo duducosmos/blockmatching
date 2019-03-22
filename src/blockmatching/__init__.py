@@ -5,13 +5,15 @@ Block Matching Algorithm to estimate optical flux and detection of moving
 objects.
 
 
-According to :cite:`cuevas2013block` in a block matching (BM) approach:
+According to [cuevs2013]_ in a block matching (BM) approach:
 
     '''...image frames in a video sequence are divided into blocks. For each
     block in the current frame, the best matching block is identified inside a
     region of the previous frame, aiming to minimize the sum of absolute
     differences...'''
 
+License
+-------
 Developed by: E. S. Pereira.
 e-mail: pereira.somoza@gmail.com
 
@@ -30,8 +32,11 @@ Copyright [2019] [E. S. Pereira]
    limitations under the License.
 
 
-.. bibliography:: refs.bib
-    :cited:
+References
+----------
+.. [cuevs2013] CUEVAS, Erik et al. Block matching algorithm for motion
+estimation based on Artificial Bee Colony (ABC).
+Applied Soft Computing, v. 13, n. 6, p. 3047-3059, 2013.
 """
 
 from .blockmatching import *

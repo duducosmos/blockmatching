@@ -4,6 +4,8 @@
 Using opencv to create the vector field using data from block matching
 algorithm.
 
+License
+-------
 Developed by: E. S. Pereira.
 e-mail: pereira.somoza@gmail.com
 
@@ -30,16 +32,21 @@ def vectormask(image, x0, y0, x1, y1, color=(255, 255, 255), width=1):
     Vector field image mask.
 
     Generate a mask with arrows representing the vector moviment.
-    input:
-        image: 2d Array
-        x0: 2d Array - Grid with x initial position of vector
-        y0: 2d Array - Grid with y initial position of vector
-        x1: 2d Array - Grid with x final position of vector
-        y1: 2d Array - Grid with y final position of vector
-        color - tuple with rgb color
-        width - integer - line width
-    return:
-        array like input image.
+    Parameters
+    ----------
+
+    :parameter 2d_array image: 2d Array
+    :parameter 2d_array x0: 2d Array - Grid with x initial position of vector
+    :parameter 2d_array y0: 2d Array - Grid with y initial position of vector
+    :parameter 2d_array x1: 2d Array - Grid with x final position of vector
+    :parameter 2d_array y1: 2d Array - Grid with y final position of vector
+    :parameter tuple color: - tuple with rgb color
+    :parameter int width: - integer - line width
+
+    Return
+    ------
+
+    :return 2d_array: array like input image.
     """
 
     sh = x0.shape

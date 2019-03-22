@@ -3,6 +3,8 @@
 """
 Separete connected moving areas of image in layers.
 
+License
+-------
 Developed by: E. S. Pereira.
 e-mail: pereira.somoza@gmail.com
 
@@ -26,15 +28,15 @@ from scipy.ndimage.filters import gaussian_filter
 def layers(frame, object_tops, width, height, sigma=7):
     '''
     Parameter:
-        frame: 2d array representing the current  image frame.
-        object_tops: list of lists with x, y for each graph from clustering
+    :parameter 2d_array frame: 2d array representing the current  image frame.
+    :parameter list object_tops: list of lists with x, y for each graph from clustering
                      algorithm.
-        width: int - width used in block matching algorithm (size of block)
-        height: int - height used in block matching algorithm (size of block)
-        scale: int - default 10. Used to create a smoothed mask to separete
+    :parameter int width: int - width used in block matching algorithm (size of block)
+    :parameter int height: int - height used in block matching algorithm (size of block)
+    :parameter int scale: int - default 10. Used to create a smoothed mask to separete
                      moving areas.
     Return:
-        layers: list of 2d array like frame.
+    :return list layers: list of 2d array like frame.
     '''
     layers = []
     for clt in object_tops:
