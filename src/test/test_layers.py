@@ -16,8 +16,7 @@ class TestLayers(unittest.TestCase):
 
     def test_background(self):
         "Background subtaction."
-
-        @dlayers(0.01, 3, 3)
+        @dlayers(0.01, 3, 3, 7)
         def background(videofile):
             print(videofile)
             cap = cv2.VideoCapture(videofile)
@@ -28,13 +27,7 @@ class TestLayers(unittest.TestCase):
                 else:
                     break
                 yield frame
-
         bcks = background(VIDEOTEST)
-        for b in bcks:
-            fg = cv2.resize(b, (0,0), fx=0.5, fy=0.5)
-            cv2.imshow('Background', b)
-            if cv2.waitKey(25) & 0xFF == ord('q'):
-                break
 
 if __name__ == "__main__":
     unittest.main()

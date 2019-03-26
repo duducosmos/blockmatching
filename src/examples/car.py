@@ -6,13 +6,14 @@ import os
 
 import cv2
 from blockmatching import *
+import matplotlib.pyplot as plt
 
 
 CDIR = os.path.dirname(os.path.abspath(__file__))
 
 VIDEOTEST = CDIR + '/videos/car.mp4'
 
-@dlayers(0.01, 3, 3)
+@dlayers(0.01, 19, 19, 7)
 def background(videofile):
     cap = cv2.VideoCapture(videofile)
     while cap.isOpened():
@@ -23,9 +24,12 @@ def background(videofile):
             break
         yield frame
 
-for b in background(VIDEOTEST):
-    fg = cv2.resize(b, (0,0), fx=0.5, fy=0.5)
-    cv2.imshow('Background', b)
+for bg, meand, layers in background(VIDEOTEST):
+    fg = cv2.resize(bg, (0,0), fx=0.5, fy=0.5)
+    if layers:
+        cv2.imshow("Layer 0", layers[0])
+
+    cv2.imshow('Background', fg)
     if cv2.waitKey(25) & 0xFF == ord('q'):
         break
 

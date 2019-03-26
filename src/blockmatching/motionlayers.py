@@ -33,7 +33,7 @@ def layers(frame, object_tops, width, height, sigma=7):
                      algorithm.
     :parameter int width: int - width used in block matching algorithm (size of block)
     :parameter int height: int - height used in block matching algorithm (size of block)
-    :parameter int scale: int - default 10. Used to create a smoothed mask to separete
+    :parameter int sigma: int - default 7. Used to create a smoothed mask to separete
                      moving areas.
     Return:
     :return list layers: list of 2d array like frame.

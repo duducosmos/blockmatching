@@ -23,6 +23,8 @@ Parameters
                        your background has moving trees and stuff, use a higher
                        value, maybe start with 0.01.
                        default: 0.01
+    :parameter int sigma: int - default 7. Used to create a smoothed mask to separete
+                     moving areas.
 
 Return
 ------
@@ -34,33 +36,47 @@ Example
 -------
 
 >>> import cv2
->>> @layers
->>> def background(videofile, alpha, width, height):
+>>>
+>>>
+>>> @layers(alpha=0.01, width=3, height=3)
+>>> def background(videofile):
 >>>     cap = cv2.VideoCapture(videofile)
 >>>     while cap.isOpened():
 >>>         ret, frame = cap.read()
 >>>         if ret == True:
 >>>             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 >>>             yield frame
->>> background('/videos/car.mp4', alpha=0.01, width=3, height=3)
+>>>
+>>> for bg, meand, layers in background("./videos/car.mp4"):
+>>>     fg = cv2.resize(bg, (0,0), fx=0.5, fy=0.5)
+>>>
+>>>     if layers:
+>>>         cv2.imshow("Layer 0", layers[0])
+>>>
+>>>     cv2.imshow('Background', fg)
+>>>     if cv2.waitKey(25) & 0xFF == ord('q'):
+>>>         brea
 """
 
 
 from .blockmatching import block_matching
 from .background import BackgroundSubtractor
 from .clustering import clustering
+from .motionlayers import layers
 import cv2
 
-"""
-class dlayers:
+
+def dlayers(alpha=0.01, width=9, height=9, sigma=7):
     '''
     Layer decorator.
+
     Parameters
     ----------
+
     :parameter int width: width, in pixels, of search box for block matching
-                          algorithm. default 3.
+                          algorithm. default 9.
     :parameter int height: height, in pixels, of search box for block matching
-                          algorithm. default 3.
+                          algorithm. default 9.
 
     :param float  alpha: The background learning factor, its value should
                        be between 0 and 1. The higher the value, the more quickly
@@ -70,103 +86,39 @@ class dlayers:
                        value, maybe start with 0.01.
                        default: 0.01
 
-    Return
-    ------
-        :return 2d_array background:
-        :return list mean_velocity:
-        :return list layers:
-    '''
-    def __init__(self, func):
-        '''Constructor.'''
-        self._width = 3
-        self._height = 3
-        self._first_frame = True
-        self._background = None
-        self._alpha = 0.01
-        self._old_frame = None
-        self.func = func
-
-
-    def __call__(self, *args, **kwargs):
-        '''
-        Layer decorator.
-
-        Parameters
-        ----------
-
-        :parameter int width: width, in pixels, of search box for block matching
-                              algorithm. default 3.
-        :parameter int height: height, in pixels, of search box for block matching
-                              algorithm. default 3.
-
-        :param float  alpha: The background learning factor, its value should
-                           be between 0 and 1. The higher the value, the more quickly
-                           your program learns the changes in the background. Therefore,
-                           for a static background use a lower value, like 0.001. But if
-                           your background has moving trees and stuff, use a higher
-                           value, maybe start with 0.01.
-                           default: 0.01
-
-        Return
-        ------
-            :return 2d_array background:
-            :return list mean_velocity:
-            :return list layers:
-        '''
-
-        if 'alpha' in kwargs:
-            self._alpha = kwargs['alpha']
-
-        if 'width' in kwargs:
-            self._width = kwargs['width']
-
-        if 'height' in kwargs:
-            self._height = kwargs['height']
-
-        for frame in self.func(*args, **kwargs):
-
-            if self._first_frame is True:
-                self._background = BackgroundSubtractor(self._alpha, frame)
-                self._old_frame = self._background.foreground(frame)
-                self._first_frame = False
-            else:
-                foreground = self._background.foreground(frame)
-                XP, YP, XD, YD = block_matching(self._old_frame,
-                                                foreground,
-                                                self._width,
-                                                self._height)
-
-                U, V, object_tops, meand = clustering(XD, YD, XP, YP)
-
-                self._old_frame = foreground.copy()
-            yield frame
-    """
-
-def dlayers(alpha, width, height):
-    '''
-    Layer decorator.
-
-    Parameters
-    ----------
-
-    :parameter int width: width, in pixels, of search box for block matching
-                          algorithm. default 3.
-    :parameter int height: height, in pixels, of search box for block matching
-                          algorithm. default 3.
-
-    :param float  alpha: The background learning factor, its value should
-                       be between 0 and 1. The higher the value, the more quickly
-                       your program learns the changes in the background. Therefore,
-                       for a static background use a lower value, like 0.001. But if
-                       your background has moving trees and stuff, use a higher
-                       value, maybe start with 0.01.
-                       default: 0.01
+    :parameter int sigma: int - default 7. Used to create a smoothed mask to separete
+                     moving areas.
 
     Return
     ------
         :return 2d_array background:
         :return list mean_velocity:
         :return list layers:
+
+    Example
+    -------
+
+    >>> import cv2
+    >>>
+    >>>
+    >>> @layers(alpha=0.01, width=3, height=3)
+    >>> def background(videofile):
+    >>>     cap = cv2.VideoCapture(videofile)
+    >>>     while cap.isOpened():
+    >>>         ret, frame = cap.read()
+    >>>         if ret == True:
+    >>>             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    >>>             yield frame
+    >>>
+    >>> for bg, meand, layers in background("./videos/car.mp4"):
+    >>>     fg = cv2.resize(bg, (0,0), fx=0.5, fy=0.5)
+    >>>
+    >>>     if layers:
+    >>>         cv2.imshow("Layer 0", layers[0])
+    >>>
+    >>>     cv2.imshow('Background', fg)
+    >>>     if cv2.waitKey(25) & 0xFF == ord('q'):
+    >>>         break
     '''
     def wrap(func):
         def wrapped_func(*args, **kwargs):
@@ -174,6 +126,8 @@ def dlayers(alpha, width, height):
             first_frame = True
             background = None
             old_frame = None
+            meand = []
+            lyrs = []
 
             for frame in func(*args, **kwargs):
                 if first_frame is True:
@@ -193,8 +147,14 @@ def dlayers(alpha, width, height):
 
                     U, V, object_tops, meand = clustering(XD, YD, XP, YP)
 
+                    lyrs = layers(frame,
+                                  object_tops,
+                                  width,
+                                  height,
+                                  sigma=sigma)
+
                     old_frame = foreground.copy()
 
-                yield frame
+                yield background.background, meand, lyrs
         return wrapped_func
     return wrap
