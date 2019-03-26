@@ -51,8 +51,8 @@ from .background import BackgroundSubtractor
 from .clustering import clustering
 import cv2
 
-
-class layers:
+"""
+class dlayers:
     '''
     Layer decorator.
     Parameters
@@ -139,7 +139,62 @@ class layers:
                 U, V, object_tops, meand = clustering(XD, YD, XP, YP)
 
                 self._old_frame = foreground.copy()
-                
+            yield frame
+    """
 
+def dlayers(alpha, width, height):
+    '''
+    Layer decorator.
 
-            yield self._background.background
+    Parameters
+    ----------
+
+    :parameter int width: width, in pixels, of search box for block matching
+                          algorithm. default 3.
+    :parameter int height: height, in pixels, of search box for block matching
+                          algorithm. default 3.
+
+    :param float  alpha: The background learning factor, its value should
+                       be between 0 and 1. The higher the value, the more quickly
+                       your program learns the changes in the background. Therefore,
+                       for a static background use a lower value, like 0.001. But if
+                       your background has moving trees and stuff, use a higher
+                       value, maybe start with 0.01.
+                       default: 0.01
+
+    Return
+    ------
+        :return 2d_array background:
+        :return list mean_velocity:
+        :return list layers:
+    '''
+    def wrap(func):
+        def wrapped_func(*args, **kwargs):
+
+            first_frame = True
+            background = None
+            old_frame = None
+
+            for frame in func(*args, **kwargs):
+                if first_frame is True:
+
+                    background = BackgroundSubtractor(alpha, frame)
+                    old_frame = background.foreground(frame)
+                    first_frame = False
+
+                else:
+
+                    foreground = background.foreground(frame)
+
+                    XP, YP, XD, YD = block_matching(old_frame,
+                                                    foreground,
+                                                    width,
+                                                    height)
+
+                    U, V, object_tops, meand = clustering(XD, YD, XP, YP)
+
+                    old_frame = foreground.copy()
+
+                yield frame
+        return wrapped_func
+    return wrap

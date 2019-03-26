@@ -5,7 +5,7 @@ import unittest
 import os
 
 import cv2
-from blockmatching import layers
+from blockmatching import dlayers
 
 CDIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -17,8 +17,8 @@ class TestLayers(unittest.TestCase):
     def test_background(self):
         "Background subtaction."
 
-        @layers
-        def background(videofile, alpha, width, height):
+        @dlayers(0.01, 3, 3)
+        def background(videofile):
             print(videofile)
             cap = cv2.VideoCapture(videofile)
             while cap.isOpened():
@@ -29,7 +29,7 @@ class TestLayers(unittest.TestCase):
                     break
                 yield frame
 
-        bcks = background(VIDEOTEST, alpha=0.01, width=3, height=3)
+        bcks = background(VIDEOTEST)
         for b in bcks:
             fg = cv2.resize(b, (0,0), fx=0.5, fy=0.5)
             cv2.imshow('Background', b)
