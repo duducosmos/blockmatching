@@ -28,9 +28,11 @@ Parameters
 
 Return
 ------
-    :return 2d_array background:
-    :return list mean_velocity:
-    :return list layers:
+    :return 2d_array background: Background in video
+    :return 2d_array foreground: foreground in video
+    :return 2d_array vectormask: vector field image
+    :return list mean_velocity: mean velocity of connected objects
+    :return list layers: connected objects separated in layers.
 
 Example
 -------
@@ -47,7 +49,7 @@ Example
 >>>             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 >>>             yield frame
 >>>
->>> for bg, meand, layers in background("./videos/car.mp4"):
+>>> for bg, fg, mask, meand, layers in background("./videos/car.mp4"):
 >>>     fg = cv2.resize(bg, (0,0), fx=0.5, fy=0.5)
 >>>
 >>>     if layers:
@@ -63,6 +65,7 @@ from .blockmatching import block_matching
 from .background import BackgroundSubtractor
 from .clustering import clustering
 from .motionlayers import layers
+from .vectormask import vectormask
 import cv2
 
 
@@ -91,9 +94,11 @@ def dlayers(alpha=0.01, width=9, height=9, sigma=7):
 
     Return
     ------
-        :return 2d_array background:
-        :return list mean_velocity:
-        :return list layers:
+        :return 2d_array background: Background in video
+        :return 2d_array foreground: foreground in video
+        :return 2d_array vectormask: vector field image
+        :return list mean_velocity: mean velocity of connected objects
+        :return list layers: connected objects separated in layers.
 
     Example
     -------
@@ -110,7 +115,7 @@ def dlayers(alpha=0.01, width=9, height=9, sigma=7):
     >>>             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     >>>             yield frame
     >>>
-    >>> for bg, meand, layers in background("./videos/car.mp4"):
+    >>> for bg, fg, mask, meand, layers in background("./videos/car.mp4"):
     >>>     fg = cv2.resize(bg, (0,0), fx=0.5, fy=0.5)
     >>>
     >>>     if layers:
@@ -125,6 +130,8 @@ def dlayers(alpha=0.01, width=9, height=9, sigma=7):
 
             first_frame = True
             background = None
+            foreground = None
+            maskvector = None
             old_frame = None
             meand = []
             lyrs = []
@@ -133,7 +140,8 @@ def dlayers(alpha=0.01, width=9, height=9, sigma=7):
                 if first_frame is True:
 
                     background = BackgroundSubtractor(alpha, frame)
-                    old_frame = background.foreground(frame)
+                    foreground = background.foreground(frame)
+                    old_frame = foreground.copy()
                     first_frame = False
 
                 else:
@@ -154,7 +162,12 @@ def dlayers(alpha=0.01, width=9, height=9, sigma=7):
                                   sigma=sigma)
 
                     old_frame = foreground.copy()
+                    maskvector = vectormask(foreground,
+                                            XD,
+                                            YD,
+                                            (XD + U).astype(int),
+                                            (YD + V).astype(int))
 
-                yield background.background, meand, lyrs
+                yield background.background, foreground, maskvector, meand, lyrs
         return wrapped_func
     return wrap

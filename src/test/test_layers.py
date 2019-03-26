@@ -27,7 +27,8 @@ class TestLayers(unittest.TestCase):
                 else:
                     break
                 yield frame
-        bcks = background(VIDEOTEST)
+        for bg, fg, mask, meand, layers in background(VIDEOTEST):
+            pass
 
 if __name__ == "__main__":
     unittest.main()
