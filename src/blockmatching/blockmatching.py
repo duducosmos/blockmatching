@@ -209,12 +209,12 @@ def _sme(img1, img0, wblock, hblock, wwind, hwind,
         height - int64 - block height in pixels
         i0 - int64 - initial line of window
         i1 - int64 - final line of window
-        j0 - int64 - initial collumn of window
-        j1 - int64 - final collumn of window
+        j0 - int64 - initial column of window
+        j1 - int64 - final column of window
     Return:
         Integer array with four elements:
-            inital line, initial collumn,
-            final line, final collumn.
+            inital line, initial column,
+            final line, final column.
     '''
     out = zeros(4)
 
