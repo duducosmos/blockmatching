@@ -45,3 +45,4 @@ from .vectormask import *
 from .background import *
 from .motionlayers import *
 from .dlayers import *
+from .savevideo import *
