@@ -1,6 +1,6 @@
 #!/usr/bin/env python3.6
 # -*- Coding: UTF-8 -*-
-r"""
+"""
 Block Matching Algorithm.
 ------------------------
 According to [cuevs2013]_ in a block matching (BM) approach:
@@ -81,6 +81,29 @@ The new position of 3x3 block in :math:`t_0 + (i+1)dt`:
 
 The size of search window depend of the expected velocity of the block. For
 slow moviment, a window with size of 3  times can be considered.
+
+:Example:
+
+>>> import cv2
+>>> from blockmatching import *
+>>> cap = cv2.VideoCapture('./videos/car.mp4')
+>>> started = False
+>>> old_frame = None
+>>> while cap.isOpened():
+>>>    ret, frame = cap.read()
+>>>    if ret == True:
+>>>        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+>>>        if started is False:
+>>>            old_frame = frame
+>>>            started = True
+>>>        else:
+>>>            XP, YP, XD, YD = block_matching(old_frame, frame,
+>>>                                            width, height)
+>>>            old_frame = frame
+>>>    else:
+>>>         break
+>>>
+>>> cap.release()
 
 License
 -------
@@ -259,10 +282,6 @@ def _block_matching(img0, img1, width, height, wblock, hblock,
             2 - Final matching x
             3 - Final matching y
     """
-
-    # O Processamento precisa ocorrer por blocos e não por janelas.
-    # As janelas é que dependem do blocos e não o contrário.
-
     m = hblock * wblock
     out = zeros((m, 4), dtype=int64)
     for i in prange(hblock - 1):
@@ -286,6 +305,29 @@ def block_matching(img0, img1, width, height):
     Block matching algorithm.
     -------------------------
     Motion estimation from two sequential images.
+
+    :Example:
+
+    >>> import cv2
+    >>> from blockmatching import *
+    >>> cap = cv2.VideoCapture('./videos/car.mp4')
+    >>> started = False
+    >>> old_frame = None
+    >>> while cap.isOpened():
+    >>>    ret, frame = cap.read()
+    >>>    if ret == True:
+    >>>        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    >>>        if started is False:
+    >>>            old_frame = frame
+    >>>            started = True
+    >>>        else:
+    >>>            XP, YP, XD, YD = block_matching(old_frame, frame,
+    >>>                                            width, height)
+    >>>            old_frame = frame
+    >>>    else:
+    >>>         break
+    >>>
+    >>> cap.release()
 
     Parameters
     ----------

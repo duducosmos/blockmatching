@@ -28,10 +28,26 @@ blockmatching.clustering module
     :undoc-members:
     :show-inheritance:
 
+blockmatching.dlayers module
+----------------------------
+
+.. automodule:: blockmatching.dlayers
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
 blockmatching.motionlayers module
 ---------------------------------
 
 .. automodule:: blockmatching.motionlayers
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+blockmatching.savevideo module
+------------------------------
+
+.. automodule:: blockmatching.savevideo
     :members:
     :undoc-members:
     :show-inheritance:

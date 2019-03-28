@@ -38,7 +38,7 @@ Example
 -------
 
 >>> import cv2
->>>
+>>> from blockmatching import *
 >>>
 >>> @layers(alpha=0.01, width=3, height=3)
 >>> def background(videofile):

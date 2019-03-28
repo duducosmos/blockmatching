@@ -3,6 +3,31 @@
 """
 Separete connected moving areas of image in layers.
 
+Example:
+--------
+>>> import cv2
+>>> from blockmatching import *
+>>> cap = cv2.VideoCapture('./videos/car.mp4')
+>>> started = False
+>>> old_frame = None
+>>> while cap.isOpened():
+>>>    ret, frame = cap.read()
+>>>    if ret == True:
+>>>        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+>>>        if started is False:
+>>>            old_frame = frame
+>>>            started = True
+>>>        else:
+>>>            XP, YP, XD, YD = block_matching(old_frame, frame,
+>>>                                            width, height)
+>>>            U, V, object_tops, meand = clustering(XD, YD, XP, YP)
+>>>            lyrs = layers(frame, object_tops, width, height, sigma=sigma)
+>>>            old_frame = frame
+>>>    else:
+>>>         break
+>>>
+>>> cap.release()
+
 License
 -------
 Developed by: E. S. Pereira.

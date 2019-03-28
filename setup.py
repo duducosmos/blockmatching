@@ -22,5 +22,6 @@ setup(
                       "opencv-python",
                       "scipy",
                       "Pillow",
-                      "networkx"]
+                      "networkx",
+                      "sk-video"]
 )
