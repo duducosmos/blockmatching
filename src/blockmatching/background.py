@@ -101,8 +101,10 @@ class BackgroundSubtractor:
         self._oldf = frame
         fclean = gaussian_filter(frame, sigma=self._sgm)
 
-        self._background = cv2.add(fclean * self.alpha,
-                                   self._background * (1.0 - self.alpha))
+        self._background = cv2.addWeighted(fclean, self.alpha,
+                                             self._background,
+                                             (1.0 - self.alpha),
+                                             0.0)
 
         result = cv2.absdiff(self._background.astype(uint8), frame)
         result[result < self._threashold] = 0

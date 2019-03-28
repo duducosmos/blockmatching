@@ -259,22 +259,24 @@ def _block_matching(img0, img1, width, height, wblock, hblock,
             2 - Final matching x
             3 - Final matching y
     """
-    m = hwindt * wwindt
+
+    # O Processamento precisa ocorrer por blocos e não por janelas.
+    # As janelas é que dependem do blocos e não o contrário.
+
+    m = hblock * wblock
     out = zeros((m, 4), dtype=int64)
+    for i in prange(hblock - 1):
+        for j in prange(wblock - 1):
+            i0 = i * (height)
+            i1 = (i + 1) * (hwind)
 
-    for i in prange(hwindt):
-        for j in prange(wwindt):
-
-            i0 = i * hwind
-            i1 = (i + 1) * hwind
-
-            j0 = j * wwind
-            j1 = (j + 1) * wwind
+            j0 = j * (width)
+            j1 = (j + 1) * (wwind)
 
             x = _sme(img1, img0, wblock, hblock, wwind, hwind,
-                    width, height, i0, i1, j0, j1)
+                     width, height, i0, i1, j0, j1)
 
-            k0 = i * wwindt + j
+            k0 = i * wblock + j
             out[k0, :] = x
     return out
 
@@ -335,5 +337,5 @@ def block_matching(img0, img1, width, height):
                           height, wblock, hblock, wwind, hwind, wwindt, hwindt
                           )
 
-    return out[:, 0].reshape(hwindt, wwindt), out[:, 1].reshape(hwindt, wwindt),\
-           out[:, 2].reshape(hwindt, wwindt), out[:, 3].reshape(hwindt, wwindt),
+    return out[:, 0].reshape(hblock, wblock), out[:, 1].reshape(hblock, wblock),\
+           out[:, 2].reshape(hblock, wblock), out[:, 3].reshape(hblock, wblock),

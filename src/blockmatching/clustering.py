@@ -97,6 +97,8 @@ def clustering(x0, y0, x1, y1):
         mdsy = int(hatj * mdsy)
         dsx[ij] = mdsx
         dsy[ij] = mdsy
+        #dsx[ij] = (x1[ij] - x0[ij])
+        #dsy[ij] = (y1[ij] - y0[ij])
         object_tops.append(list(zip(x1[ij], y1[ij])))
         mean_displacement.append([mdsx, mdsy])
 

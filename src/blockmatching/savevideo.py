@@ -12,7 +12,9 @@ class SaveVideo:
     def __init__(self, nfile, rate=2):
         self._nfile = nfile
         self._size = None
-        self.out = FFmpegWriter(nfile, outputdict={'-r': str(rate),}
+        self.out = FFmpegWriter(nfile,
+                                inputdict={'-r': str(rate), },
+                                outputdict={'-r': str(rate),}
                                 )
 
 
