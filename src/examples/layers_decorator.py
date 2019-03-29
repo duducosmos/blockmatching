@@ -15,13 +15,14 @@ VIDEOTEST = CDIR + '/videos/car.mp4'
 OUTPUT = CDIR + '/videos/output.mp4'
 output = SaveVideo(OUTPUT)
 
-@dlayers(0.01, 19, 19, 7)
+@dlayers(0.01, 17, 17, 3)
 def background(videofile):
     cap = cv2.VideoCapture(videofile)
     while cap.isOpened():
         ret, frame = cap.read()
         if ret == True:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            frame = cv2.resize(frame, (0,0), fx=1 / 2, fy=1 / 2)
         else:
             cap.release()
             break
@@ -33,17 +34,16 @@ for bg, fg, mask, meand, layers in background(VIDEOTEST):
     sizex = 1
     sizey = 1
 
-    if mask is not None:
+    if mask is not None and len(layers) > 0:
         try:
             img = cv2.add(fg, mask)
         except:
             img = fg
 
         lyr = layers[0]
-
         '''
         msk = lyr == 0
-        tmp = cv2.subtract(bg, lyr)
+        tmp = cv2.subtract(lyr, bg)
         tmp[msk] = 0
         lyr[tmp == 0] = 0
         '''
