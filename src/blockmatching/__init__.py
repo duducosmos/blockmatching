@@ -46,3 +46,4 @@ from .background import *
 from .motionlayers import *
 from .dlayers import *
 from .savevideo import *
+from .forecast import *

@@ -40,7 +40,7 @@ Example
 >>> import cv2
 >>> from blockmatching import *
 >>>
->>> @layers(alpha=0.01, width=3, height=3)
+>>> @dlayers(alpha=0.01, width=3, height=3)
 >>> def background(videofile):
 >>>     cap = cv2.VideoCapture(videofile)
 >>>     while cap.isOpened():
@@ -57,7 +57,7 @@ Example
 >>>
 >>>     cv2.imshow('Background', fg)
 >>>     if cv2.waitKey(25) & 0xFF == ord('q'):
->>>         brea
+>>>         break
 """
 
 

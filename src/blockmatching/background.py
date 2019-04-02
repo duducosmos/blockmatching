@@ -115,10 +115,10 @@ class BackgroundSubtractor:
 
         .. math::
 
-            bkg_{i} = frame_{i} * \alpha + bkg_{i-1} * (1 - \alpha)
+            bkg_\{i\} = frame_\{i\} * \alpha + bkg_\{i-1\} * (1 - \alpha)
 
-        where :math:`bkg_{i}` is the current background, :math:`\alpha` is
-        the learning rate and :math:`frame_{i}` is the current frame.
+        where :math:`bkg_\{i\}` is the current background, :math:`\alpha` is
+        the learning rate and :math:`frame_\{i\}` is the current frame.
 
         :param 2d_array frame: Current frame.
 
