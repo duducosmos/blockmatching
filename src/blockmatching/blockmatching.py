@@ -200,7 +200,7 @@ def _ssme(window, block, height, width):
 
                 # To Priorize the central region of window.
                 # Neighbors can have same value and false moviment is detected.
-                # To avoid, a diferential approach for center of window.
+                # To avoid, a diferent approach for center of window.
                 if diff <= minval:
                     minval = diff
                     out[0] = ki

@@ -50,7 +50,7 @@ Copyright [2019] [E. S. Pereira]
 
 import networkx as nx
 from numpy import abs, array, sqrt,  where, zeros_like, floor
-
+import matplotlib.pyplot as plt
 
 def _mout_edges(nodes):
     """Find edges using vertices representing xy position vertices."""
@@ -106,6 +106,15 @@ def clustering(x0, y0, x1, y1):
     mean_displacement = []
 
     for subgraph in nx.connected_components(graph):
+
+        '''
+        graphTMP = nx.Graph()
+        graphTMP.add_edges_from(nodes[list(subgraph)])
+        nx.draw(graphTMP)
+        plt.show()
+        print(nx.subgraph_centrality(graphTMP))
+        '''
+        
         ij = array(nodes[list(subgraph)])
         ij = (ij[:,0], ij[:, 1])
         n = ij[0].shape[0]
