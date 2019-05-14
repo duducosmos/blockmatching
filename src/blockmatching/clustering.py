@@ -49,7 +49,7 @@ Copyright [2019] [E. S. Pereira]
 '''
 
 import networkx as nx
-from numpy import abs, array, sqrt,  where, zeros_like, floor
+from numpy import abs, array, sqrt,  where, zeros_like, floor, median
 import matplotlib.pyplot as plt
 
 def _mout_edges(nodes):
@@ -68,7 +68,7 @@ def _mout_edges(nodes):
     return edges
 
 
-def clustering(x0, y0, x1, y1):
+def clustering(x0, y0, x1, y1, smooth=15):
     """
     Estimating displacement of objects using optical flow.
 
@@ -107,18 +107,11 @@ def clustering(x0, y0, x1, y1):
 
     for subgraph in nx.connected_components(graph):
 
-        '''
-        graphTMP = nx.Graph()
-        graphTMP.add_edges_from(nodes[list(subgraph)])
-        nx.draw(graphTMP)
-        plt.show()
-        print(nx.subgraph_centrality(graphTMP))
-        '''
-        
         ij = array(nodes[list(subgraph)])
         ij = (ij[:,0], ij[:, 1])
         n = ij[0].shape[0]
 
+        '''
         mdsx = floor(sqrt((x0[ij] - x1[ij]) ** 2.0).sum() / n)
         mdsy = floor(sqrt((y0[ij] - y1[ij]) ** 2.0).sum() / n)
 
@@ -128,10 +121,24 @@ def clustering(x0, y0, x1, y1):
         hatj = hatj / abs(hatj) if abs(hatj) != 0 else 0
         mdsx = int(hati * mdsx)
         mdsy = int(hatj * mdsy)
-        dsx[ij] = mdsx
-        dsy[ij] = mdsy
-        #dsx[ij] = (x1[ij] - x0[ij])
-        #dsy[ij] = (y1[ij] - y0[ij])
+        '''
+        mdsx = floor(median(x0[ij] - x1[ij]))
+        mdsy = floor(median(y0[ij] - y1[ij]))
+
+        nnodes = ij[0].size
+
+        if nnodes <= smooth:
+            dsx[ij] = mdsx
+            dsy[ij] = mdsy
+        else:
+            for smo_i in range(0, nnodes - smooth, smooth):
+                subij = (ij[0][smo_i:smo_i + smooth], ij[1][smo_i:smo_i + smooth])
+                smdsx = floor(median(x0[subij] - x1[subij]))
+                smdsy = floor(median(y0[subij] - y1[subij]))
+
+                dsx[subij] = smdsx
+                dsy[subij] = smdsy
+
         object_tops.append(list(zip(x1[ij], y1[ij])))
         mean_displacement.append([mdsx, mdsy])
 

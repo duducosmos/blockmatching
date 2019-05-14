@@ -143,7 +143,8 @@ operational solar radiation forecasts in the US.  Solar Energy,
 from numba import jitclass
 from numba import njit, prange, jit, float64, int64, uint8
 
-from numpy import zeros
+from numpy import zeros, sqrt, array
+import cv2
 
 
 TYPESSME = "float64[:](float64[:,:], float64[:,:], int64, int64)"
@@ -193,8 +194,15 @@ def _ssme(window, block, height, width):
 
     for ki in prange(height):
         for kj in prange(width):
-            diff = ((window[ki: ki + height, kj: kj + width] - block) ** 2
-                    ).sum() / (height * width) ** 2
+            tmp = (window[ki: ki + height, kj: kj + width] - block).flatten()
+            diff = 0
+            for val in list(tmp):
+                if val < 0:
+                    val = 0
+                if val > 255:
+                    val = 255
+                diff += val
+            diff = diff / (height * width)
 
             if ki == height // 2 and kj == width // 2:
 
