@@ -46,6 +46,11 @@ Copyright [2019] [E. S. Pereira]
    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
    See the License for the specific language governing permissions and
    limitations under the License.
+
+   Bibliography:
+   BRAD, Remus; LETIA, Ioan Alfred. Cloud motion detection from infrared
+   satellite images. In: Second International Conference on Image and Graphics.
+   International Society for Optics and Photonics, 2002. p. 408-413.
 '''
 
 import networkx as nx
@@ -75,6 +80,8 @@ def clustering(x0, y0, x1, y1, smooth=15):
     Based on connected components in an undirected graph algorithm.
 
     Generate a mask with arrows representing the vector moviment.
+    Velocities are smoothed from median following the sugestion from the work
+    of Bran and Letia, 2002 (doi:10.1117/12.477174).
     Parameters
     ----------
     :parameter 2d_array x0: 2d Array - Grid with x initial position of vector
@@ -111,17 +118,6 @@ def clustering(x0, y0, x1, y1, smooth=15):
         ij = (ij[:,0], ij[:, 1])
         n = ij[0].shape[0]
 
-        '''
-        mdsx = floor(sqrt((x0[ij] - x1[ij]) ** 2.0).sum() / n)
-        mdsy = floor(sqrt((y0[ij] - y1[ij]) ** 2.0).sum() / n)
-
-        hati = ((x0[ij] - x1[ij])).sum()
-        hati = hati / abs(hati) if abs(hati) != 0 else 0
-        hatj = ((y0[ij] - y1[ij])).sum()
-        hatj = hatj / abs(hatj) if abs(hatj) != 0 else 0
-        mdsx = int(hati * mdsx)
-        mdsy = int(hatj * mdsy)
-        '''
         mdsx = floor(median(x0[ij] - x1[ij]))
         mdsy = floor(median(y0[ij] - y1[ij]))
 
