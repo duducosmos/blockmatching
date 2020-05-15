@@ -66,7 +66,8 @@ from .motionlayers import layers
 import cv2
 
 
-def forecasting(seconds, dt, alpha=0.01, width=9, height=9, sigma=7):
+def forecasting(seconds, dt, alpha=0.01, width=9, height=9, sigma=7,
+                smooth=10, maxsizegraph=30):
     """
     Forecasting using block matching algorithm.
 
@@ -148,7 +149,9 @@ def forecasting(seconds, dt, alpha=0.01, width=9, height=9, sigma=7):
                                                     width,
                                                     height)
 
-                    U, V, object_tops, meand = clustering(XD, YD, XP, YP)
+                    U, V, object_tops, meand = clustering(XD, YD, XP, YP,
+                                                          smooth=smooth,
+                                                          maxsizegraph=maxsizegraph)
 
                     lars = layers(frame,
                                   object_tops,
@@ -161,12 +164,12 @@ def forecasting(seconds, dt, alpha=0.01, width=9, height=9, sigma=7):
                     r = zeros_like(frame)
                     for i in range(len(meand)):
                         c = seconds / dt
-                        dsy, dsx = int(c * meand[i][0]) , int(c * meand[i][1])
+                        dsy, dsx = int(c * meand[i][0]), int(c * meand[i][1])
 
                         fill_width = (0, abs(dsx)) if dsx < 0 \
-                                     else (abs(dsx), 0)
+                            else (abs(dsx), 0)
                         fill_height = (0, abs(dsy)) if dsy < 0 \
-                                     else (abs(dsy), 0)
+                            else (abs(dsy), 0)
 
                         tmp = pad(lars[i],
                                   (fill_height, fill_width),

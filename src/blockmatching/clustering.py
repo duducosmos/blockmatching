@@ -52,10 +52,16 @@ Copyright [2019] [E. S. Pereira]
    satellite images. In: Second International Conference on Image and Graphics.
    International Society for Optics and Photonics, 2002. p. 408-413.
 '''
-
+from collections import defaultdict
+from scipy.cluster import hierarchy
+from scipy.spatial import distance
 import networkx as nx
-from numpy import abs, array, sqrt,  where, zeros_like, floor, median
+from random import choice
+from networkx.algorithms import community
+from numpy import abs, array, sqrt, where, zeros_like, floor, median, zeros
+from numpy import float64, diag, sum, dot, linalg, argmax
 import matplotlib.pyplot as plt
+
 
 def _mout_edges(nodes):
     """Find edges using vertices representing xy position vertices."""
@@ -72,8 +78,46 @@ def _mout_edges(nodes):
                 edges.append([i, j])
     return edges
 
+def split_graph(subg, graph, maxsizegraph):
+    subgraph = graph.subgraph(subg)
+    nnodes = subgraph.number_of_nodes()
+    if nnodes >= maxsizegraph:
+        subnodes = []
+        allvisited = []
+        for _ in range(0, nnodes, maxsizegraph):
+            nnodes = subgraph.number_of_nodes()
+            visited = list()
+            if nnodes <= maxsizegraph:
+                visited = set(subgraph.nodes())
+                subnodes.append(visited)
+                break
+            else:
+                start = choice(list(subgraph.nodes()))
+                while start in allvisited:
+                    start = choice(list(subgraph.nodes()))
+                visited.append(start)
+                allvisited.append(start)
+                while len(visited) < maxsizegraph:
+                    neighbors = list(subgraph.neighbors(visited[-1]))
+                    while len(neighbors) != 0:
+                        vnode = choice(neighbors)
+                        if vnode not in allvisited:
+                            if vnode not in visited:
+                                visited.append(vnode)
+                                allvisited.append(vnode)
+                                break
+                        neighbors.pop(neighbors.index(vnode))
 
-def clustering(x0, y0, x1, y1, smooth=15):
+                    else:
+                        break
+
+            visited = set(visited)
+            subnodes.append(visited)
+        return subnodes
+    return [subgraph]
+
+
+def clustering(x0, y0, x1, y1, smooth=15, maxsizegraph=100):
     """
     Estimating displacement of objects using optical flow.
 
@@ -113,29 +157,31 @@ def clustering(x0, y0, x1, y1, smooth=15):
     mean_displacement = []
 
     for subgraph in nx.connected_components(graph):
+        for subgin in split_graph(subgraph, graph, maxsizegraph):
+            ij = array(nodes[list(subgin)])
+            ij = (ij[:,0], ij[:, 1])
+            nnodes = ij[0].size
 
-        ij = array(nodes[list(subgraph)])
-        ij = (ij[:,0], ij[:, 1])
-        n = ij[0].shape[0]
+            n = ij[0].shape[0]
 
-        mdsx = floor(median(x0[ij] - x1[ij]))
-        mdsy = floor(median(y0[ij] - y1[ij]))
+            mdsx = floor(median(x0[ij] - x1[ij]))
+            mdsy = floor(median(y0[ij] - y1[ij]))
 
-        nnodes = ij[0].size
+            nnodes = ij[0].size
 
-        if nnodes <= smooth:
-            dsx[ij] = mdsx
-            dsy[ij] = mdsy
-        else:
-            for smo_i in range(0, nnodes - smooth, smooth):
-                subij = (ij[0][smo_i:smo_i + smooth], ij[1][smo_i:smo_i + smooth])
-                smdsx = floor(median(x0[subij] - x1[subij]))
-                smdsy = floor(median(y0[subij] - y1[subij]))
+            if nnodes <= smooth:
+                dsx[ij] = mdsx
+                dsy[ij] = mdsy
+            else:
+                for smo_i in range(0, nnodes - smooth, smooth):
+                    subij = (ij[0][smo_i:smo_i + smooth], ij[1][smo_i:smo_i + smooth])
+                    smdsx = floor(median(x0[subij] - x1[subij]))
+                    smdsy = floor(median(y0[subij] - y1[subij]))
 
-                dsx[subij] = smdsx
-                dsy[subij] = smdsy
+                    dsx[subij] = smdsx
+                    dsy[subij] = smdsy
 
-        object_tops.append(list(zip(x1[ij], y1[ij])))
-        mean_displacement.append([mdsx, mdsy])
+            object_tops.append(list(zip(x1[ij], y1[ij])))
+            mean_displacement.append([mdsx, mdsy])
 
     return dsx, dsy, object_tops, mean_displacement
