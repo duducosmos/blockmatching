@@ -55,6 +55,8 @@ Copyright [2019] [E. S. Pereira]
 from collections import defaultdict
 from scipy.cluster import hierarchy
 from scipy.spatial import distance
+from scipy.stats import mode
+
 import networkx as nx
 from random import choice
 from networkx.algorithms import community
@@ -164,8 +166,8 @@ def clustering(x0, y0, x1, y1, smooth=15, maxsizegraph=100):
 
             n = ij[0].shape[0]
 
-            mdsx = floor(median(x0[ij] - x1[ij]))
-            mdsy = floor(median(y0[ij] - y1[ij]))
+            mdsx = floor(mode(x0[ij] - x1[ij])[0])
+            mdsy = floor(mode(y0[ij] - y1[ij])[0])
 
             nnodes = ij[0].size
 
@@ -175,8 +177,8 @@ def clustering(x0, y0, x1, y1, smooth=15, maxsizegraph=100):
             else:
                 for smo_i in range(0, nnodes - smooth, smooth):
                     subij = (ij[0][smo_i:smo_i + smooth], ij[1][smo_i:smo_i + smooth])
-                    smdsx = floor(median(x0[subij] - x1[subij]))
-                    smdsy = floor(median(y0[subij] - y1[subij]))
+                    smdsx = floor(mode(x0[subij] - x1[subij])[0])
+                    smdsy = floor(mode(y0[subij] - y1[subij])[0])
 
                     dsx[subij] = smdsx
                     dsy[subij] = smdsy
